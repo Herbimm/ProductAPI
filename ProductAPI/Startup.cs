@@ -1,11 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using ProductAPI.Entities.Interfaces.Repository;
+using ProductAPI.Entities.Interfaces.Service;
+using ProductAPI.Repository.Context;
+using ProductAPI.Repository.Repository;
+using ProductAPI.Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +32,11 @@ namespace ProductAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<IProductRepository, ProductRepository>();
+
+            services.AddDbContext<MyContext>(options => options.UseSqlServer(@"Password=admin123;Persist Security Info=True;User ID=sa;Initial Catalog=ProductDb;Data Source=DESKTOP-92BMSB0\SQLEXPRESS"), ServiceLifetime.Singleton);
+
 
             services.AddSwaggerGen(c =>
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Product API", Version = "v1," }));

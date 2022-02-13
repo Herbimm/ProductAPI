@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProductAPI.Entities.Entities
+namespace ProductAPI.Entities.DTO
 {
-    public class Product
+    public class ProductDto
     {
-        public int Id { get; set; }
         public string Nome { get; set; }
         public double Valor { get; set; }
     }

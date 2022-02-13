@@ -1,47 +1,45 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProductAPI.Entities.DTO;
 using ProductAPI.Entities.Entities;
+using ProductAPI.Entities.Interfaces.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ProductAPI.Controllers
 {
-    [Route("Clientes")]
+    [Route("Produtos")]
     [ApiController]
     public class ProductController : ControllerBase
-    {    
+    {
+        private readonly IProductService _productService;
 
-        [HttpGet("BuscarCliente")]
-        public Cliente BuscarCliente(int numeroDeIndentificacao)
+        public ProductController(IProductService productService)
         {
-            List<Cliente> listaCliente = new List<Cliente>();
-            // PROCURA O CLIENTE E O RETORNA NA TELA
-            Cliente primeiroCliente = new Cliente();
-            Cliente segundoCliente = new Cliente();
-            
-            primeiroCliente.Nome = "Herbert";
-            primeiroCliente.Id = 1;
-            primeiroCliente.CPF = "117.641.252-84";
-            primeiroCliente.EnderecoCompleto = "Morro do papagaio";
-
-            segundoCliente.Nome = "Adriano";
-            segundoCliente.Id = 2;
-
-            listaCliente.Add(primeiroCliente);
-            listaCliente.Add(segundoCliente);
-
-            var buscarClientePorId = listaCliente.FirstOrDefault(c => c.Id == numeroDeIndentificacao);           
-
-            return buscarClientePorId;            
+            _productService = productService;
         }
 
-        [HttpPost("CadastrarCliente")]
-        public IActionResult CadastrarCliente(Cliente cliente)
+        [HttpGet("BuscarProdutos")]
+        public List<Product> BuscarProdutos()
         {
+           var produtos = _productService.BuscarProdutos();
+           return produtos;         
+        }
+
+        [HttpPost("CadastrarProduto")]
+        public IActionResult CadastrarProduto(Product produto)
+        {
+            try
+            {
+               var cadastrarProduto = _productService.CadastrarProduto(produto);
+                return Ok("Produto Cadastrado com Sucesso");                
+            }
+            catch (Exception)
+            {
+                throw new Exception("Erro no Sistema, Favor Contactar o Adm");
+            }
             
-            // CADASTRO DO CLIENTE NO BANCO E RETORNO DA MENSAGEM DE SUCESSO
-            return Ok($"Cliente CPF {cliente.CPF} Cadastrado com Sucesso");
         }
     }
 }
