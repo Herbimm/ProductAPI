@@ -12,7 +12,8 @@ namespace ProductAPI.Repository.Context
         {
         }
 
-        public DbSet<Product> Produtos { get; set; }
+        public DbSet<Product> Produtos { get; set; }       
+
         //public dbset<cliente> clientes { get; set; }
 
        

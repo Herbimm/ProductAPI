@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using ProductAPI.Entities.Interfaces.Repository;
 using ProductAPI.Entities.Interfaces.Service;
 using ProductAPI.Repository.Context;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization;
 
 namespace ProductAPI
 {
@@ -30,14 +32,23 @@ namespace ProductAPI
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllersWithViews();
+        {          
+
+            services.AddCors(c=>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+          
+
+            services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling=Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver=new DefaultContractResolver());
+
             services.AddSingleton<IProductService, ProductService>();
             services.AddSingleton<IProductRepository, ProductRepository>();
 
             services.AddDbContext<MyContext>(options => options.UseSqlServer(@"Password=admin123;Persist Security Info=True;User ID=sa;Initial Catalog=ProductDb;Data Source=DESKTOP-92BMSB0\SQLEXPRESS"), ServiceLifetime.Singleton);
 
-
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Product API", Version = "v1," }));
             
@@ -45,6 +56,7 @@ namespace ProductAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
