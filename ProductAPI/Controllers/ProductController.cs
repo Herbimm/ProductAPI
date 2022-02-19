@@ -68,7 +68,6 @@ namespace ProductAPI.Controllers
             {
                 throw new Exception("Erro no Sistema, Favor Contactar o Adm");
             }
-
         }
 
         [HttpDelete("DeletarProduto")]
